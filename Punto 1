@@ -1,0 +1,55 @@
+import pandas as pd
+import json
+
+df = pd.read_csv("dataset.csv")
+df.head()
+
+df.columns
+df.shape
+
+# Abre y carga el archivo JSON
+with open('taylor_swift_spotify.json', 'r') as file:
+    data = json.load(file)
+
+type(df['tracks'][0][0])
+
+df = pd.json_normalize(data, 'albums', ['artist_id', 'artist_name', 'artist_popularity'])
+neworder = ['artist_id', 'artist_name', 'artist_popularity', 'album_id', 'album_name', 'album_release_date', 'album_total_tracks', 'tracks']
+df = df.reindex(columns=neworder)
+df.head()
+
+df.columns
+
+df2.columns
+
+df3.columns
+
+df4.columns
+
+df4.shape
+
+df3.columns
+
+df3.shape
+
+## Código final definitivo
+
+import pandas as pd
+import json
+
+def normalizar_data(json_route):
+  with open(json_route, 'r') as file:
+    data = json.load(file)
+
+  df = pd.json_normalize(data, 'albums', ['artist_id', 'artist_name', 'artist_popularity'])
+  neworder = ['artist_id', 'artist_name', 'artist_popularity', 'album_id', 'album_name', 'album_release_date', 'album_total_tracks', 'tracks']
+  df = df.reindex(columns=neworder)
+  df2 = df.explode('tracks', ignore_index=True).rename(columns={"tracks": "features"})
+  df3=pd.json_normalize(df2['features'])
+  df4 = pd.concat([df3, df2], axis=1)
+  df4 = df4.drop('features', axis=1)
+  df4.to_csv('dataset_salida.csv', index=False)
+
+  return df4
+
+  normalizar_data('taylor_swift_spotify.json')
